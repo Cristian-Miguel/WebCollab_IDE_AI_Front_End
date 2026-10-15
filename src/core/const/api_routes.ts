@@ -1,14 +1,18 @@
 
-export const API_BASE_URL = import.meta.env.VITE_APP_ENVIRONMENT === 'DEVELOP' ? import.meta.env.VITE_APP_API_ENDPOINT_URL_DEVELOP :
-    import.meta.env.VITE_APP_ENVIRONMENT === 'TEST' ? import.meta.env.VITE_APP_API_ENDPOINT_URL_TEST :
-    import.meta.env.VITE_APP_ENVIRONMENT === 'QA' ? import.meta.env.VITE_APP_API_ENDPOINT_URL_QA :
-    import.meta.env.VITE_APP_API_ENDPOINT_URL_PRODUCTION;
+const environment = import.meta.env.VITE_APP_ENVIRONMENT?.toUpperCase() || 'DEVELOP';
+
+export const API_BASE_URL = (
+  environment === 'TEST' ? import.meta.env.VITE_APP_API_ENDPOINT_URL_TEST :
+  environment === 'QA' ? import.meta.env.VITE_APP_API_ENDPOINT_URL_QA :
+  environment === 'PRODUCTION' ? import.meta.env.VITE_APP_API_ENDPOINT_URL_PRODUCTION :
+  import.meta.env.VITE_APP_API_ENDPOINT_URL_DEVELOP
+)?.replace(/\/+$/, '') || 'http://localhost:3000/api/v1';
 
 export const API_ROUTES = {
   // Rutas del módulo de autenticación
   LOGIN: `${API_BASE_URL}/auth/login`,
   REGISTER: `${API_BASE_URL}/auth/register`,
-  REFRESH_TOKEN: `${API_BASE_URL}/auth/refresh`,
+  REFRESH_TOKEN: `${API_BASE_URL}/auth/refresh-token`,
   LOGOUT_TOKEN: `${API_BASE_URL}/auth/logout`,
   RESET_PASSWORD_TOKEN: `${API_BASE_URL}/auth/password/request-reset`,
   CHANGE_PASSWORD_TOKEN: `${API_BASE_URL}/auth/password/change`,
@@ -20,4 +24,7 @@ export const API_ROUTES = {
   UPDATE_USER: `${API_BASE_URL}/user`,
   DELETE_USER: `${API_BASE_URL}/user`,
   PAGINATE_USERS: `${API_BASE_URL}/user/paginate`,
+
+  // Rutas de sesiones colaborativas
+  SESSIONS: `${API_BASE_URL}/sessions`,
 };

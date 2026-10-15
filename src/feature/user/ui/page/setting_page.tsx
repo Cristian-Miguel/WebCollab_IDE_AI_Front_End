@@ -56,18 +56,14 @@ const SettingsPage: React.FC = () => {
     const handleResendEmail = async () => {
         setSendLoading(true);
         setSendStatus('idle');
-
-        const success = await resendValidationEmail();
-
-        if (success) {
+        try {
+            await resendValidationEmail();
             setSendStatus('success');
-            // IMPORTANTE: Recarga los datos del perfil para verificar el nuevo estado
-            // setTimeout(refetch, 3000); 
-        } else {
+        } catch {
             setSendStatus('error');
+        } finally {
+            setSendLoading(false);
         }
-
-        setSendLoading(false);
     };
 
     const handleLogout = () => {

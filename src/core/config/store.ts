@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import { authReducer } from '../../feature/auth/context/auth_reducer';
-// ... otros reducers que puedas tener
+import { dashboardReducer } from '../../feature/dashboard/store/dashboard_slice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
-  // ... añadir más reducers aquí
+  dashboard: dashboardReducer,
 });
 
 // Define el Store (Configuración actual)

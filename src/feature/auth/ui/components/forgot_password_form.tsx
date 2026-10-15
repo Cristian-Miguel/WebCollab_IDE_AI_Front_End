@@ -1,77 +1,82 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Link as RouterLink } from 'react-router-dom';
 import { z } from 'zod';
+import { Alert, Box, Button, Link, TextField, Typography } from '@mui/material';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { requestPasswordReset } from '../../service/auth_service';
-import { useAuth } from '../../hook/use_auth';
-import { Box, Button, TextField, Typography, CircularProgress, Alert } from '@mui/material';
 
-// Esquema simple para el correo
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Ingrese un correo válido.'),
+const schema = z.object({
+  email: z.string().trim().email('Escribe un correo electrónico válido.'),
 });
 
-type ForgotPasswordFormInputs = z.infer<typeof forgotPasswordSchema>;
+type ForgotPasswordFormInputs = z.infer<typeof schema>;
 
 const ForgotPasswordForm: React.FC = () => {
-  const { loading, setLoading, setError } = useAuth();
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormInputs>({
-    resolver: zodResolver(forgotPasswordSchema),
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormInputs>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: '' },
   });
 
-  const onSubmit = async (data: ForgotPasswordFormInputs) => {
+  const onSubmit = async ({ email }: ForgotPasswordFormInputs) => {
     setLoading(true);
     setError(null);
-    setSuccess(false);
-
-    const result = await requestPasswordReset(data.email);
-
-    if (result) {
-      setSuccess(true);
-    } else {
-      // Mensaje genérico para no revelar si el correo existe
-      setError('Si el correo existe, recibirás un enlace para restablecer tu contraseña.');
+    try {
+      await requestPasswordReset(email);
+      setSubmitted(true);
+    } catch (submissionError) {
+      setError(submissionError instanceof Error ? submissionError.message : 'No fue posible procesar la solicitud.');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', p: 3, boxShadow: 3, borderRadius: 2 }}>
-      <Typography variant="h5" gutterBottom align="center">
-        ¿Olvidaste tu contraseña?
-      </Typography>
-      <Typography variant="body2" align="center" sx={{ mb: 3 }}>
-        Ingresa tu correo y te enviaremos un enlace para restablecerla.
+    <Box className="auth-form auth-form-compact">
+      <Typography className="auth-eyebrow">RECUPERACIÓN DE CUENTA</Typography>
+      <Typography component="h2" className="auth-form-title">¿Olvidaste tu contraseña?</Typography>
+      <Typography className="auth-form-description">
+        Escribe el correo asociado a tu cuenta. Si existe, te enviaremos un enlace para crear una nueva contraseña.
       </Typography>
 
-      {success && <Alert severity="success" sx={{ mb: 2 }}>Enlace enviado. ¡Revisa tu bandeja de entrada!</Alert>}
-      {loading && <CircularProgress size={24} sx={{ display: 'block', mx: 'auto', my: 2 }} />}
-      {errors.root?.message && <Alert severity="error" sx={{ mb: 2 }}>{errors.root.message}</Alert>}
+      {submitted && (
+        <Alert severity="success" role="status" sx={{ mb: 2.5 }}>
+          Si el correo está registrado, recibirás las instrucciones en tu bandeja de entrada.
+        </Alert>
+      )}
+      {error && <Alert severity="error" role="alert" sx={{ mb: 2.5 }}>{error}</Alert>}
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <TextField
-          label="Correo Electrónico"
-          fullWidth
-          margin="normal"
-          {...register('email')}
-          error={!!errors.email}
-          helperText={errors.email?.message}
-          disabled={loading || success}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ mt: 3 }}
-          disabled={loading || success}
-        >
-          Enviar Enlace
-        </Button>
-      </form>
+      {!submitted && (
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <TextField
+            {...register('email')}
+            label="Correo electrónico"
+            type="email"
+            autoComplete="email"
+            fullWidth
+            autoFocus
+            disabled={loading}
+            error={Boolean(errors.email)}
+            helperText={errors.email?.message}
+          />
+          <Button type="submit" variant="contained" fullWidth size="large" className="auth-submit" disabled={loading}>
+            {loading ? 'Enviando…' : 'Enviar instrucciones'}
+          </Button>
+        </Box>
+      )}
+
+      <Link component={RouterLink} to="/login" className="auth-back-link" underline="hover">
+        <ArrowBackRoundedIcon fontSize="small" /> Volver al inicio de sesión
+      </Link>
     </Box>
   );
 };

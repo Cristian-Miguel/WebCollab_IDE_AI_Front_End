@@ -1,7 +1,7 @@
 // src/components/header.tsx
 
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Box, Button, Menu, MenuItem } from '@mui/material';
+import { Alert, AppBar, Toolbar, Typography, IconButton, Box, Button, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useAuth } from '../../feature/auth/hook/use_auth';
@@ -10,10 +10,12 @@ import { logoutToken } from '../../feature/auth/service/auth_service';
 import MenuSideBar from './menu_side_bar'; 
 
 const Header: React.FC = () => {
-  const { user, logout, userRole, dispatch } = useAuth();
+  const { user, logout, userRole } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -25,12 +27,16 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     handleClose();
-    const success = await logoutToken();
-    if (success) {
+    setLogoutError(null);
+    setIsLoggingOut(true);
+    try {
+      await logoutToken();
       logout();
-      navigate('/login');
-    } else {
-      dispatch({ type: 'AUTH/LOADING', payload: false });
+      navigate('/login', { replace: true });
+    } catch (error) {
+      setLogoutError(error instanceof Error ? error.message : 'No fue posible cerrar la sesión.');
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -93,7 +99,9 @@ const Header: React.FC = () => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleProfileClick}>Mi Perfil</MenuItem>
-              <MenuItem onClick={handleLogout}>Cerrar Sesión</MenuItem>
+              <MenuItem onClick={handleLogout} disabled={isLoggingOut}>
+                {isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión'}
+              </MenuItem>
             </Menu>
           </Box>
         ) : (
@@ -105,6 +113,11 @@ const Header: React.FC = () => {
       
       {/* Sidebar (Drawer) */}
       <MenuSideBar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {logoutError && (
+        <Alert severity="error" onClose={() => setLogoutError(null)} sx={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1400 }}>
+          {logoutError}
+        </Alert>
+      )}
     </AppBar>
   );
 };

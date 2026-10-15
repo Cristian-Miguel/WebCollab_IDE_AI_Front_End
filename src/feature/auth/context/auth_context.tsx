@@ -8,7 +8,7 @@ export interface AuthContextValue extends AuthState {
 
   // Funciones y Dispatcher
   dispatch: React.Dispatch<AuthAction>;
-  loginSuccess: (user: AuthUser, accessToken: string, refreshToken: string) => void;
+  loginSuccess: (user: AuthUser, accessToken: string) => void;
   logout: () => void;
   userRole: string; 
 }
@@ -17,7 +17,7 @@ export interface AuthContextValue extends AuthState {
 const initialContextValue: AuthContextValue = {
   isAuthenticated: false,
   user: null,
-  loading: false,
+  loading: true,
   error: null,
   dispatch: () => {},
   loginSuccess: () => {},

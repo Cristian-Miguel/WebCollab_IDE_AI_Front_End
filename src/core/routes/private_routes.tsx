@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import HomePage from '../../feature/home/ui/page/home_page';
 import SettingsPage from '../../feature/user/ui/page/setting_page';
+import WorkspacePage from '../../feature/ide/ui/page/workspace_page';
 // import { type RouteConfig } from './public_routes';
 
 interface RouteConfig {
@@ -25,6 +26,11 @@ export const PrivateRoutes: RouteConfig[] = [
     name: 'Configuración de Usuario',
     path: '/settings',
     element: <SettingsPage/>,
+  },
+  {
+    name: 'Espacio de Trabajo Colaborativo',
+    path: '/workspace/:sessionId',
+    element: <WorkspacePage />,
   },
   // {
   //   path: '/users/create',

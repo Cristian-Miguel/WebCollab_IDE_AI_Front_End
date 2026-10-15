@@ -1,133 +1,115 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Alert, Box, Button, IconButton, InputAdornment, Link, TextField, Typography } from '@mui/material';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { z } from 'zod';
 import { resetPassword } from '../../service/auth_service';
-import { useAuth } from '../../hook/use_auth';
-import { useNavigate } from 'react-router-dom';
-import { Box, Button, TextField, Typography, CircularProgress, Alert, Link as MuiLink } from '@mui/material';
-import type { ErrorResponse } from '../../../../core/model/error_response';
 
-// Esquema de validación para la nueva contraseña (misma lógica que en Registro) [cite: 111]
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,16}$/;
-
-const resetPasswordSchema = z.object({
-    password: z.string()
-      .min(8, 'Debe tener entre 8 y 16 caracteres.')
-      .max(16, 'Debe tener entre 8 y 16 caracteres.')
-      .regex(PASSWORD_REGEX, 'Debe incluir mayúscula, minúscula, número y carácter especial.'),
-    confirmPassword: z.string(),
-  }).refine(data => data.password === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden.',
-    path: ['confirmPassword'],
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_-])[A-Za-z\d@$!%*?&_-]{8,16}$/;
+const resetSchema = z.object({
+  password: z.string()
+    .min(8, 'Usa entre 8 y 16 caracteres.')
+    .max(16, 'Usa entre 8 y 16 caracteres.')
+    .regex(PASSWORD_REGEX, 'Incluye mayúscula, minúscula, número y un símbolo.'),
+  confirmPassword: z.string(),
+}).refine(({ password, confirmPassword }) => password === confirmPassword, {
+  message: 'Las contraseñas no coinciden.',
+  path: ['confirmPassword'],
 });
 
-type ResetPasswordFormInputs = z.infer<typeof resetPasswordSchema>;
+type ResetFormInputs = z.infer<typeof resetSchema>;
 
-interface ResetPasswordChangeFormProps {
-    token: string; // Recibe el token de la URL
-}
+const ResetPasswordChangeForm: React.FC<{ token: string }> = ({ token }) => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-const ResetPasswordChangeForm: React.FC<ResetPasswordChangeFormProps> = ({ token }) => {
-    const { loading, setLoading, setError, error: authError } = useAuth();
-    const navigate = useNavigate();
-    const [success, setSuccess] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResetFormInputs>({
+    resolver: zodResolver(resetSchema),
+    defaultValues: { password: '', confirmPassword: '' },
+  });
 
-    const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormInputs>({
-        resolver: zodResolver(resetPasswordSchema),
-    });
+  const onSubmit = async ({ password }: ResetFormInputs) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await resetPassword({ password, token });
+      setSuccess(true);
+      window.setTimeout(() => navigate('/login', { replace: true }), 2500);
+    } catch (submissionError) {
+      setError(submissionError instanceof Error ? submissionError.message : 'No fue posible cambiar la contraseña.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const onSubmit = async (data: ResetPasswordFormInputs) => {
-        setLoading(true);
-        setError(null);
-        setSuccess(false);
+  const togglePassword = (visible: boolean, toggle: () => void, label: string) => (
+    <InputAdornment position="end">
+      <IconButton aria-label={label} onClick={toggle} edge="end" disabled={loading || success}>
+        {visible ? <VisibilityOffOutlinedIcon /> : <VisibilityOutlinedIcon />}
+      </IconButton>
+    </InputAdornment>
+  );
 
-        const resetData = { ...data, token };
+  return (
+    <Box className="auth-form auth-form-compact">
+      <Typography className="auth-eyebrow">RECUPERACIÓN DE CUENTA</Typography>
+      <Typography component="h2" className="auth-form-title">Elige una nueva contraseña</Typography>
+      <Typography className="auth-form-description">
+        Crea una contraseña segura que no hayas usado antes.
+      </Typography>
+      {success && (
+        <Alert severity="success" role="status" sx={{ mb: 2.5 }}>
+          Tu contraseña cambió correctamente. Te llevaremos al inicio de sesión.
+        </Alert>
+      )}
+      {error && <Alert severity="error" role="alert" sx={{ mb: 2.5 }}>{error}</Alert>}
 
-        const result = await resetPassword(resetData);
-
-        if (result.code[0] === 'S') {
-            setSuccess(true);
-            setTimeout(() => navigate('/login'), 5000);
-        } else {
-            const errorObject = result as ErrorResponse;
-
-            if(errorObject.code === 'E0001') {
-                setError('Error al restablecer la contraseña. Inténtalo de nuevo.');
-                setLoading(false);
-                return;
-            } else if(errorObject.code === 'E1004') {
-                setError('Error: El token para validar el cambio de contraseña expiró o no es válido. Solicita uno nuevo.');
-                setLoading(false);
-                return;
-            } else {
-                setError(errorObject.message || 'Error desconocido al restablecer la contraseña. Inténtalo de nuevo.');
-            }
-        }
-        
-        setLoading(false);
-    };
-
-    return (
-        <Box sx={{ maxWidth: 400, mx: 'auto', p: 3, boxShadow: 3, borderRadius: 2 }}>
-            <Typography variant="h5" gutterBottom align="center">
-                Establecer Nueva Contraseña
-            </Typography>
-            {success && 
-                <Alert severity="success" sx={{ mb: 2 }}>
-                    Contraseña restablecida con éxito. Serás redirigido al inicio de sesión.
-                </Alert>
-            }
-            {loading && <CircularProgress size={24} sx={{ display: 'block', mx: 'auto', my: 2 }} />}
-            {/* {errors.root?.message && <Alert severity="error" sx={{ mb: 2 }}>{errors.root.message}</Alert>} */}
-            {authError && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {authError}
-                </Alert>
-            )}
-
-            <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                <TextField
-                    label="Nueva Contraseña"
-                    fullWidth
-                    margin="normal"
-                    {...register('password')}
-                    error={!!errors.password}
-                    helperText={errors.password?.message}
-                    disabled={loading || success}
-                    type="password"
-                />
-                <TextField
-                    label="Confirmar Contraseña"
-                    fullWidth
-                    margin="normal"
-                    {...register('confirmPassword')}
-                    error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword?.message}
-                    disabled={loading || success}
-                    type="password"
-                />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mt: 3 }}
-                    disabled={loading || success}
-                >
-                    Cambiar Contraseña
-                </Button>
-            </form>
-
-            {!success && (
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <MuiLink href="/forgot-password" variant="body2">
-                        ¿Solicitar un nuevo enlace?
-                    </MuiLink>
-                </Box>
-            )}
+      {!success && (
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+          <TextField
+            {...register('password')}
+            label="Nueva contraseña"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            fullWidth
+            autoFocus
+            disabled={loading}
+            InputProps={{ endAdornment: togglePassword(showPassword, () => setShowPassword((visible) => !visible), showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña') }}
+            error={Boolean(errors.password)}
+            helperText={errors.password?.message || '8–16 caracteres; incluye mayúscula, número y símbolo.'}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            {...register('confirmPassword')}
+            label="Confirmar nueva contraseña"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            fullWidth
+            disabled={loading}
+            error={Boolean(errors.confirmPassword)}
+            helperText={errors.confirmPassword?.message}
+          />
+          <Button type="submit" variant="contained" fullWidth size="large" className="auth-submit" disabled={loading}>
+            {loading ? 'Actualizando…' : 'Guardar nueva contraseña'}
+          </Button>
         </Box>
-    );
+      )}
+      <Link component={RouterLink} to="/login" className="auth-back-link" underline="hover">
+        <ArrowBackRoundedIcon fontSize="small" /> Volver al inicio de sesión
+      </Link>
+    </Box>
+  );
 };
 
 export default ResetPasswordChangeForm;

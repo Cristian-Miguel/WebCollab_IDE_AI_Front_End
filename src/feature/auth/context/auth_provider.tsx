@@ -1,11 +1,12 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import { store, type RootState, type AppDispatch } from '../../../core/config/store'; 
 import { ThemeProvider } from '@mui/material/styles';
 import { createCustomTheme } from '../../../core/config/theme_manage';
 import { AuthContext } from './auth_context'; // <-- Componente Context
-import { type AuthUser, type AuthAction, AUTH_ACTION_TYPES } from './auth_types';
-import { checkAndRefreshTokens } from '../../../core/config/jwt_manage';
+import { type AuthUser, AUTH_ACTION_TYPES } from './auth_types';
+import { clearTokens } from '../../../core/config/jwt_manage';
+import { restoreSession } from '../service/auth_service';
 
 // El componente principal que envuelve toda la App
 interface AppProvidersProps {
@@ -22,31 +23,49 @@ const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const dispatch = useDispatch<AppDispatch>();
     
     // 2. Definir funciones de acción
-    const loginSuccess = (user: AuthUser, accessToken: string, refreshToken: string) => {
-        dispatch({ 
-            type: AUTH_ACTION_TYPES.LOGIN_SUCCESS, 
-            payload: { user, accessToken, refreshToken } 
-        } as AuthAction);
-    };
+    const loginSuccess = useCallback((user: AuthUser, accessToken: string) => {
+        dispatch({
+            type: AUTH_ACTION_TYPES.LOGIN_SUCCESS,
+            payload: { user, accessToken },
+        });
+    }, [dispatch]);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         dispatch({ type: AUTH_ACTION_TYPES.LOGOUT });
-    };
+    }, [dispatch]);
 
     // 3. Lógica de inicialización: Revisar tokens al cargar la app
     useEffect(() => {
-        // Esta es la función que evita la sesión "fantasma" al cargar
-        checkAndRefreshTokens(dispatch); 
-    }, [dispatch]);
+        let mounted = true;
+
+        const handleSessionExpired = () => dispatch({ type: AUTH_ACTION_TYPES.LOGOUT });
+        window.addEventListener('auth:session-expired', handleSessionExpired);
+
+        void restoreSession()
+            .then(({ user, accessToken }) => {
+                if (mounted) loginSuccess(user, accessToken);
+            })
+            .catch(() => {
+                clearTokens();
+            })
+            .finally(() => {
+                if (mounted) dispatch({ type: AUTH_ACTION_TYPES.READY });
+            });
+
+        return () => {
+            mounted = false;
+            window.removeEventListener('auth:session-expired', handleSessionExpired);
+        };
+    }, [dispatch, loginSuccess]);
     
     // 4. Crear el valor del Contexto (userRole expuesto)
     const contextValue = useMemo(() => ({
         ...authState,
-        dispatch: dispatch as React.Dispatch<AuthAction>, // Tipado forzado para el Contexto
+        dispatch,
         loginSuccess,
         logout,
         userRole: authState.user?.role || 'public', 
-    }), [authState, dispatch]);
+    }), [authState, dispatch, loginSuccess, logout]);
 
     // 5. Provee el Contexto a los hijos
     return (

@@ -7,14 +7,14 @@ const initialUser: AuthUser | null = null;
 export const authInitialState: AuthState = {
   isAuthenticated: false,
   user: initialUser,
-  loading: false,
+  loading: true,
   error: null,
 };
 
 export const authReducer = (state: AuthState = authInitialState, action: AuthAction): AuthState => {
   switch (action.type) {
     case AUTH_ACTION_TYPES.LOGIN_SUCCESS:
-      saveTokens(action.payload.accessToken, action.payload.refreshToken);
+      saveTokens(action.payload.accessToken);
       return {
         ...state,
         isAuthenticated: true,
@@ -39,6 +39,12 @@ export const authReducer = (state: AuthState = authInitialState, action: AuthAct
       return {
         ...state,
         error: action.payload,
+        loading: false,
+      };
+
+    case AUTH_ACTION_TYPES.READY:
+      return {
+        ...state,
         loading: false,
       };
 

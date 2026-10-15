@@ -23,10 +23,10 @@ export const useAuth = () => {
    * Despacha la acción de LOGIN_SUCCESS.
    * Guarda los tokens y establece el estado de autenticación. Es llamado por auth_service.ts.
    */
-  const loginSuccess = (user: AuthUser, accessToken: string, refreshToken: string) => {
+  const loginSuccess = (user: AuthUser, accessToken: string) => {
       dispatch({ 
           type: AUTH_ACTION_TYPES.LOGIN_SUCCESS, 
-          payload: { user, accessToken, refreshToken } 
+          payload: { user, accessToken } 
       } as AuthAction);
   };
 

@@ -1,8 +1,12 @@
 import React from 'react';
 import { useAuth } from '../../../auth/hook/use_auth';
-import { Grid, Typography, Paper, Box, Divider } from '@mui/material';
+import { Alert, Grid, Typography, Paper, Box, Divider, Snackbar, Button } from '@mui/material';
 import WavingHandIcon from '@mui/icons-material/WavingHand';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { CreateSessionModal } from '../../../dashboard/ui/components/create_session_modal';
 
 // Componentes futuros que podrían ir aquí
 // import ChartPie from '../components/chart_pie'; 
@@ -11,6 +15,18 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 const HomePage: React.FC = () => {
     // Obtenemos los datos del usuario para personalizar la bienvenida
     const { user, userRole } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [registrationNotice, setRegistrationNotice] = useState<string | null>(
+        (location.state as { notice?: string } | null)?.notice || null,
+    );
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (registrationNotice) {
+            navigate(location.pathname, { replace: true, state: null });
+        }
+    }, [location.pathname, navigate, registrationNotice]);
     
     // Función para obtener la hora del día y un saludo apropiado
     const getGreeting = () => {
@@ -22,18 +38,47 @@ const HomePage: React.FC = () => {
 
     return (
         <Box sx={{ p: 2, flexGrow: 1 }}>
+            <Snackbar
+                open={Boolean(registrationNotice)}
+                autoHideDuration={9000}
+                onClose={() => setRegistrationNotice(null)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert severity="info" onClose={() => setRegistrationNotice(null)} sx={{ width: '100%' }}>
+                    {registrationNotice}
+                </Alert>
+            </Snackbar>
             
-            {/* 1. Encabezado de Bienvenida */}
-            <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <WavingHandIcon sx={{ mr: 1, color: 'primary.main' }} />
-                {getGreeting()}, {user?.email || 'Usuario'}
-            </Typography>
-            
-            <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
-                Rol Actual: **{userRole ? userRole.toUpperCase() : 'N/A'}**
-            </Typography>
+            {/* 1. Encabezado de Bienvenida y Acción Principal */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+                <Box>
+                    <Typography variant="h4" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                        <WavingHandIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        {getGreeting()}, {user?.email || 'Usuario'}
+                    </Typography>
+                    
+                    <Typography variant="h6" color="text.secondary">
+                        Rol Actual: **{userRole ? userRole.toUpperCase() : 'N/A'}**
+                    </Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    startIcon={<AddBoxRoundedIcon />}
+                    onClick={() => setIsCreateModalOpen(true)}
+                    sx={{ borderRadius: 2, px: 3, py: 1.2, fontWeight: 600, textTransform: 'none' }}
+                >
+                    Nueva Sesión Colaborativa
+                </Button>
+            </Box>
             
             <Divider sx={{ mb: 4 }} />
+
+            <CreateSessionModal
+                open={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+            />
 
             {/* 2. Sección de Widgets y Métricas (Contenedor para futuras adiciones) */}
             <Grid container spacing={3}>

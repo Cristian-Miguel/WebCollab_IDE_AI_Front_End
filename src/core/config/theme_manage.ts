@@ -60,7 +60,9 @@ export const createCustomTheme = (): Theme => {
       body2: { fontSize: TEXT_SIZES.body2 },
       subtitle1: { fontSize: TEXT_SIZES.subtitle1 },
       subtitle2: { fontSize: TEXT_SIZES.subtitle2 },
+      button: { textTransform: 'none', fontWeight: 700 },
     },
+    shape: { borderRadius: 12 },
 
     // Componentes Globales (Opcional: puedes definir estilos base para componentes)
     components: {
@@ -68,12 +70,25 @@ export const createCustomTheme = (): Theme => {
         defaultProps: {
           disableElevation: true, // Deshabilita la elevación por defecto en botones
         },
+        styleOverrides: {
+          root: { textTransform: 'none', fontWeight: 700 },
+        },
       },
       MuiPaper: {
         styleOverrides: {
           root: {
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)', // Sombra personalizada
           },
+        },
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: { borderRadius: 12, backgroundColor: '#FFFFFF' },
+        },
+      },
+      MuiTextField: {
+        defaultProps: {
+          size: 'medium',
         },
       },
     }

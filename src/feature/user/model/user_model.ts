@@ -2,8 +2,6 @@ export interface User {
     id?              :string,
     email            :string,
     fullName         :string,
-    rfc              :string,
-    curp             :string,
     birthDate        :Date,
     profileImageUrl? :string,
     isEmailVerified  :boolean,
