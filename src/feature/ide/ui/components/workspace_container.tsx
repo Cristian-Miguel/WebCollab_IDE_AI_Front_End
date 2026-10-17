@@ -23,6 +23,7 @@ import type { SessionParticipantModel } from '../../../dashboard/types/session_t
 import { createSessionSocket, createYjsWebSocket } from '../../../../core/config/socket';
 import { JoinSessionButton } from './join_session_button';
 import { useAuth } from '../../../auth/hook/use_auth';
+import { EditorContainer } from '../../../../features/editor/components/EditorContainer';
 
 interface WorkspaceContainerProps {
   sessionId: string;
@@ -139,44 +140,40 @@ export const WorkspaceContainer: React.FC<WorkspaceContainerProps> = ({ sessionI
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, md: 8 }}>
-          <Paper elevation={3} sx={{ p: 4, borderRadius: 3, bgcolor: 'background.paper', height: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <CodeRoundedIcon sx={{ fontSize: 36, color: 'primary.main' }} />
-                <Box>
-                  <Typography variant="h6" fontWeight={700}>
-                    {currentSession?.nombre || 'Sesión Colaborativa'}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    ID: {sessionId}
-                  </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, bgcolor: 'background.paper' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <CodeRoundedIcon sx={{ fontSize: 32, color: 'primary.main' }} />
+                  <Box>
+                    <Typography variant="h6" fontWeight={700}>
+                      {currentSession?.nombre || 'Sesión Colaborativa'}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      ID: {sessionId}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Chip
+                    size="small"
+                    label={wsConnected ? 'Socket.IO Conectado' : 'Socket.IO Desconectado'}
+                    color={wsConnected ? 'success' : 'default'}
+                    variant="outlined"
+                  />
+                  <Chip
+                    size="small"
+                    label={yjsConnected ? 'Yjs CRDT Activo' : 'Yjs En Espera'}
+                    color={yjsConnected ? 'info' : 'default'}
+                    variant="outlined"
+                  />
+                  <JoinSessionButton sessionId={sessionId} onJoined={() => {}} />
                 </Box>
               </Box>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Chip
-                  size="small"
-                  label={wsConnected ? 'Socket.IO Conectado' : 'Socket.IO Desconectado'}
-                  color={wsConnected ? 'success' : 'default'}
-                  variant="outlined"
-                />
-                <Chip
-                  size="small"
-                  label={yjsConnected ? 'Yjs CRDT Activo' : 'Yjs En Espera'}
-                  color={yjsConnected ? 'info' : 'default'}
-                  variant="outlined"
-                />
-              </Box>
-            </Box>
+            </Paper>
 
-            <Divider sx={{ my: 2 }} />
-
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              {currentSession?.descripcion ||
-                'Entorno colaborativo sincronizado en tiempo real con control estricto de hasta 4 participantes simultáneos.'}
-            </Typography>
-
-            <JoinSessionButton sessionId={sessionId} onJoined={() => {}} />
-          </Paper>
+            <EditorContainer />
+          </Box>
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
