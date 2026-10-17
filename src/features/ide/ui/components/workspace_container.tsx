@@ -16,6 +16,7 @@ import { PresenceSidebar } from '../../../presence/components/PresenceSidebar';
 import { JoinSessionButton } from './join_session_button';
 import { useAuth } from '../../../auth/hook/use_auth';
 import { EditorContainer } from '../../../editor/components/EditorContainer';
+import { PreviewPanel } from '../../../preview/components/PreviewPanel';
 
 interface WorkspaceContainerProps {
   sessionId: string;
@@ -109,6 +110,8 @@ export const WorkspaceContainer: React.FC<WorkspaceContainerProps> = ({ sessionI
               userId={user?.uuid}
               userName={user?.email || 'Desarrollador'}
             />
+
+            <PreviewPanel sessionId={sessionId} />
           </Box>
         </Grid>
 

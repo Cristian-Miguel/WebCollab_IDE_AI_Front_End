@@ -7,6 +7,7 @@ import { getAccessToken } from '../../../core/config/jwt_manage';
 import { useAppDispatch } from '../../../core/hooks/redux_hooks';
 import { updateFileContent } from '../store/editorSlice';
 import { setSyncLatencyMs } from '../../presence/store/presenceSlice';
+import { getOrCreateSessionYDoc, destroySessionYDoc } from '../../preview/utils/yjsDocRegistry';
 import type { EditorFileName } from '../types/editor_types';
 
 interface UseYjsMonacoOptions {
@@ -30,13 +31,13 @@ export const useYjsMonaco = ({
   const providerRef = useRef<WebsocketProvider | null>(null);
   const bindingRef = useRef<MonacoBinding | null>(null);
 
-  // 1. Inicializar Y.Doc y WebsocketProvider por sesión en /yjs-ws
+  // 1. Inicializar Y.Doc compartido y WebsocketProvider por sesión en /yjs-ws
   useEffect(() => {
     if (!sessionId) {
       return;
     }
 
-    const ydoc = new Y.Doc();
+    const ydoc = getOrCreateSessionYDoc(sessionId);
     ydocRef.current = ydoc;
 
     const token = getAccessToken() || '';
@@ -91,7 +92,7 @@ export const useYjsMonaco = ({
         bindingRef.current = null;
       }
       provider.destroy();
-      ydoc.destroy();
+      destroySessionYDoc(sessionId);
       providerRef.current = null;
       ydocRef.current = null;
       setYjsSynced(false);
