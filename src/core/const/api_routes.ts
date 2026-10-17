@@ -1,4 +1,3 @@
-
 const environment = import.meta.env.VITE_APP_ENVIRONMENT?.toUpperCase() || 'DEVELOP';
 
 export const API_BASE_URL = (
@@ -7,6 +6,9 @@ export const API_BASE_URL = (
   environment === 'PRODUCTION' ? import.meta.env.VITE_APP_API_ENDPOINT_URL_PRODUCTION :
   import.meta.env.VITE_APP_API_ENDPOINT_URL_DEVELOP
 )?.replace(/\/+$/, '') || 'http://localhost:3000/api/v1';
+
+export const SERVER_BASE_URL = API_BASE_URL.replace(/\/api\/v1$/, '');
+export const YJS_WS_BASE_URL = SERVER_BASE_URL.replace(/^http/, 'ws') + '/yjs-ws';
 
 export const API_ROUTES = {
   // Rutas del módulo de autenticación
@@ -27,4 +29,5 @@ export const API_ROUTES = {
 
   // Rutas de sesiones colaborativas
   SESSIONS: `${API_BASE_URL}/sessions`,
+  JOIN_SESSION: (sessionId: string) => `${API_BASE_URL}/sessions/${sessionId}/join`,
 };

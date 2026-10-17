@@ -3,6 +3,23 @@ export interface CreateSessionPayload {
   descripcion?: string;
 }
 
+export interface ParticipantUser {
+  id: string;
+  email: string;
+  fullName: string;
+}
+
+export interface SessionParticipantModel {
+  id: string;
+  usuarioId: string;
+  sesionId: string;
+  rol: 'PROPIETARIO' | 'COLABORADOR';
+  activo: boolean;
+  createdAt: string;
+  updatedAt: string;
+  usuario?: ParticipantUser;
+}
+
 export interface SessionModel {
   id: string;
   nombre: string;
@@ -13,9 +30,16 @@ export interface SessionModel {
   updatedAt: string;
 }
 
+export interface JoinSessionResponseData {
+  session: SessionModel;
+  participant: SessionParticipantModel;
+  participants: SessionParticipantModel[];
+}
+
 export interface DashboardState {
   sessions: SessionModel[];
   currentSession: SessionModel | null;
+  participants: SessionParticipantModel[];
   loading: boolean;
   error: string | null;
 }

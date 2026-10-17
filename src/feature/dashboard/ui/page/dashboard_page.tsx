@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Button, Typography, Paper, Grid, Card, CardContent, CardActions } from '@mui/material';
+import { Box, Button, Typography, Paper, Grid, Card, CardContent, CardActions, Divider } from '@mui/material';
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import CodeRoundedIcon from '@mui/icons-material/CodeRounded';
 import { CreateSessionModal } from '../components/create_session_modal';
+import { JoinSessionButton } from '../../../ide/ui/components/join_session_button';
 import { useAuth } from '../../../auth/hook/use_auth';
 
 export const DashboardPage: React.FC = () => {
@@ -70,15 +71,15 @@ export const DashboardPage: React.FC = () => {
       </Grid>
 
       <Card elevation={2} sx={{ borderRadius: 3, p: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
-        <CardContent sx={{ py: 6 }}>
+        <CardContent sx={{ py: 5 }}>
           <GroupsRoundedIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h5" fontWeight={700} gutterBottom>
-            Comienza una nueva colaboración
+            Comienza o únete a una colaboración
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 500, mx: 'auto', mb: 3 }}>
-            Crea una sesión de programación colaborativa, comparte el enlace con hasta 3 desarrolladores y edita proyectos en tiempo real.
+            Crea una sesión de programación colaborativa o ingresa el ID de una sesión existente (máximo 4 usuarios simultáneos).
           </Typography>
-          <CardActions sx={{ justifyContent: 'center' }}>
+          <CardActions sx={{ justifyContent: 'center', mb: 3 }}>
             <Button
               variant="contained"
               size="medium"
@@ -89,6 +90,12 @@ export const DashboardPage: React.FC = () => {
               Crear Primera Sesión
             </Button>
           </CardActions>
+
+          <Divider sx={{ my: 3 }}>o únete con un ID existente</Divider>
+
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <JoinSessionButton showInput />
+          </Box>
         </CardContent>
       </Card>
 
