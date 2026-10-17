@@ -3,11 +3,13 @@ import { combineReducers } from 'redux';
 import { authReducer } from '../../feature/auth/context/auth_reducer';
 import { dashboardReducer } from '../../feature/dashboard/store/dashboard_slice';
 import { editorReducer } from '../../features/editor/store/editorSlice';
+import { presenceReducer } from '../../features/presence/store/presenceSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
   dashboard: dashboardReducer,
   editor: editorReducer,
+  presence: presenceReducer,
 });
 
 // Define el Store (Configuración actual)

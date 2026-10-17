@@ -1,8 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import Editor, { type BeforeMount, type OnMount } from '@monaco-editor/react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../../core/hooks/redux_hooks';
 import { updateFileContent } from '../store/editorSlice';
+import { useYjsMonaco } from '../hooks/useYjsMonaco';
 
 let emmetDisposerRegistered = false;
 
@@ -19,11 +20,29 @@ interface MonacoPosition {
   column: number;
 }
 
-export const MonacoEditorWrapper: React.FC = () => {
+interface MonacoEditorWrapperProps {
+  sessionId?: string;
+  userId?: string;
+  userName?: string;
+}
+
+export const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
+  sessionId,
+  userId,
+  userName,
+}) => {
   const dispatch = useAppDispatch();
   const { activeFile, files, theme, fontSize } = useAppSelector((state) => state.editor);
   const currentFile = files[activeFile];
-  const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const [editorInstance, setEditorInstance] = useState<Parameters<OnMount>[0] | null>(null);
+
+  useYjsMonaco({
+    sessionId,
+    activeFile,
+    editorInstance,
+    userId,
+    userName,
+  });
 
   const handleBeforeMount: BeforeMount = (monaco) => {
     const monacoAny = monaco as unknown as {
@@ -160,7 +179,7 @@ export const MonacoEditorWrapper: React.FC = () => {
   };
 
   const handleEditorMount: OnMount = (editor) => {
-    editorRef.current = editor;
+    setEditorInstance(editor);
     editor.focus();
   };
 

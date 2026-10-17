@@ -5,7 +5,17 @@ import { FileTabs } from './FileTabs';
 import { MonacoEditorWrapper } from './MonacoEditorWrapper';
 import { useAppSelector } from '../../../core/hooks/redux_hooks';
 
-export const EditorContainer: React.FC = () => {
+interface EditorContainerProps {
+  sessionId?: string;
+  userId?: string;
+  userName?: string;
+}
+
+export const EditorContainer: React.FC<EditorContainerProps> = ({
+  sessionId,
+  userId,
+  userName,
+}) => {
   const { activeFile, files } = useAppSelector((state) => state.editor);
   const currentFile = files[activeFile];
 
@@ -36,7 +46,7 @@ export const EditorContainer: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <CodeRoundedIcon color="primary" fontSize="small" />
           <Typography variant="subtitle2" fontWeight={700}>
-            Editor Multi-Lenguaje
+            Editor Multi-Lenguaje Sincronizado (Yjs CRDT)
           </Typography>
         </Box>
         <Typography variant="caption" color="text.secondary">
@@ -45,7 +55,7 @@ export const EditorContainer: React.FC = () => {
       </Box>
 
       <FileTabs />
-      <MonacoEditorWrapper />
+      <MonacoEditorWrapper sessionId={sessionId} userId={userId} userName={userName} />
     </Paper>
   );
 };
