@@ -30,4 +30,7 @@ export const API_ROUTES = {
   // Rutas de sesiones colaborativas
   SESSIONS: `${API_BASE_URL}/sessions`,
   JOIN_SESSION: (sessionId: string) => `${API_BASE_URL}/sessions/${sessionId}/join`,
+
+  // Rutas de asistencia con Inteligencia Artificial (HU-16)
+  AI_SUGGEST: `${API_BASE_URL}/ai/suggest`,
 };

@@ -17,6 +17,7 @@ import { JoinSessionButton } from './join_session_button';
 import { useAuth } from '../../../auth/hook/use_auth';
 import { EditorContainer } from '../../../editor/components/EditorContainer';
 import { PreviewPanel } from '../../../preview/components/PreviewPanel';
+import { AIAssistantPanel } from '../../../ai-assistant/components/AIAssistantPanel';
 
 interface WorkspaceContainerProps {
   sessionId: string;
@@ -110,6 +111,8 @@ export const WorkspaceContainer: React.FC<WorkspaceContainerProps> = ({ sessionI
               userId={user?.uuid}
               userName={user?.email || 'Desarrollador'}
             />
+
+            <AIAssistantPanel sessionId={sessionId} />
 
             <PreviewPanel sessionId={sessionId} />
           </Box>

@@ -4,12 +4,14 @@ import { authReducer } from '../../feature/auth/context/auth_reducer';
 import { dashboardReducer } from '../../feature/dashboard/store/dashboard_slice';
 import { editorReducer } from '../../features/editor/store/editorSlice';
 import { presenceReducer } from '../../features/presence/store/presenceSlice';
+import { aiReducer } from '../../features/ai-assistant/store/aiSlice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
   dashboard: dashboardReducer,
   editor: editorReducer,
   presence: presenceReducer,
+  aiAssistant: aiReducer,
 });
 
 // Define el Store (Configuración actual)
