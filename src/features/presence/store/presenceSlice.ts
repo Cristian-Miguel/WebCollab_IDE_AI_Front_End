@@ -5,6 +5,7 @@ const initialState: PresenceState = {
   onlineUsers: [],
   isConnected: false,
   syncLatencyMs: 18,
+  connectionError: null,
 };
 
 export const presenceSlice = createSlice({
@@ -20,6 +21,9 @@ export const presenceSlice = createSlice({
     setSyncLatencyMs: (state, action: PayloadAction<number>) => {
       state.syncLatencyMs = action.payload;
     },
+    setPresenceError: (state, action: PayloadAction<string | null>) => {
+      state.connectionError = action.payload;
+    },
   },
 });
 
@@ -27,6 +31,7 @@ export const {
   setOnlineUsers,
   setPresenceConnected,
   setSyncLatencyMs,
+  setPresenceError,
 } = presenceSlice.actions;
 
 export const presenceReducer = presenceSlice.reducer;

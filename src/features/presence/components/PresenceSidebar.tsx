@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Box, Typography, Chip, Divider, List } from '@mui/material';
+import { Paper, Box, Typography, Chip, Divider, List, Alert } from '@mui/material';
 import GroupsRoundedIcon from '@mui/icons-material/GroupsRounded';
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded';
 import { useAppSelector } from '../../../core/hooks/redux_hooks';
@@ -11,7 +11,9 @@ interface PresenceSidebarProps {
 }
 
 export const PresenceSidebar: React.FC<PresenceSidebarProps> = ({ participants: propParticipants }) => {
-  const { onlineUsers, isConnected, syncLatencyMs } = useAppSelector((state) => state.presence);
+  const { onlineUsers, isConnected, syncLatencyMs, connectionError } = useAppSelector(
+    (state) => state.presence
+  );
   const dashboardParticipants = useAppSelector((state) => state.dashboard.participants);
 
   const list =
@@ -54,7 +56,7 @@ export const PresenceSidebar: React.FC<PresenceSidebarProps> = ({ participants: 
           label={`${activeCount} / 4 Activos`}
           color={activeCount >= 4 ? 'warning' : 'primary'}
           size="small"
-           sx={{ fontWeight: 700 }}
+          sx={{ fontWeight: 700 }}
         />
       </Box>
 
@@ -70,6 +72,12 @@ export const PresenceSidebar: React.FC<PresenceSidebarProps> = ({ participants: 
           {isConnected ? '● En vivo' : '○ Conectando...'}
         </Typography>
       </Box>
+
+      {connectionError && (
+        <Alert severity="warning" sx={{ mb: 1.5, py: 0.5 }}>
+          {connectionError}
+        </Alert>
+      )}
 
       <Divider sx={{ mb: 1.5 }} />
 

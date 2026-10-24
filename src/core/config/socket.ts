@@ -6,6 +6,7 @@ export const createSessionSocket = (sessionId: string, userId?: string): Socket 
   const token = getAccessToken() || undefined;
   return io(SERVER_BASE_URL, {
     autoConnect: false,
+    reconnection: false,
     withCredentials: true,
     auth: {
       token,
