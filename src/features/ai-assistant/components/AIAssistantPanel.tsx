@@ -6,6 +6,7 @@ import {
   TextField,
   Button,
   Alert,
+  AlertTitle,
   CircularProgress,
   Chip,
 } from '@mui/material';
@@ -15,6 +16,8 @@ import {
   requestAISuggestion,
   clearAISuggestion,
   clearAIError,
+  handleApiError,
+  AI_RATE_LIMIT_ALERT_MESSAGE,
 } from '../store/aiSlice';
 import { updateFileContent } from '../../editor/store/editorSlice';
 import { getOrCreateSessionYDoc } from '../../preview/utils/yjsDocRegistry';
@@ -25,13 +28,16 @@ interface AIAssistantPanelProps {
 }
 
 /**
- * Panel de Asistencia mediante Inteligencia Artificial (HU-16).
- * Permite solicitar sugerencias de código para el archivo activo y aplicarlas al editor y Y.Doc.
+ * Panel de Asistencia mediante Inteligencia Artificial (HU-16 y HU-27).
+ * Permite solicitar sugerencias de código para el archivo activo, aplicarlas al editor y Y.Doc,
+ * y captura errores 429 Too Many Requests mostrando una alerta informativa mediante `handleApiError`.
  */
 export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ sessionId }) => {
   const dispatch = useAppDispatch();
   const { activeFile, files } = useAppSelector((state) => state.editor);
-  const { currentSuggestion, loading, error } = useAppSelector((state) => state.aiAssistant);
+  const { currentSuggestion, loading, error, isRateLimited } = useAppSelector(
+    (state) => state.aiAssistant
+  );
   const [promptUsuario, setPromptUsuario] = useState('');
   const [appliedSuccess, setAppliedSuccess] = useState(false);
 
@@ -41,7 +47,7 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ sessionId })
     setAppliedSuccess(false);
     dispatch(clearAIError());
 
-    await dispatch(
+    const resultAction = await dispatch(
       requestAISuggestion({
         contextoCodigo: currentFile.content,
         lenguaje: currentFile.language,
@@ -49,6 +55,14 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ sessionId })
         sesionId: sessionId,
       })
     );
+
+    if (requestAISuggestion.rejected.match(resultAction)) {
+      dispatch(
+        handleApiError(
+          resultAction.payload || AI_RATE_LIMIT_ALERT_MESSAGE
+        )
+      );
+    }
   };
 
   const handleApplyToEditor = (suggestedCode: string) => {
@@ -91,12 +105,20 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ sessionId })
             Asistente de Código con IA
           </Typography>
         </Box>
-        <Chip
-          size="small"
-          color="secondary"
-          variant="outlined"
-          label={`Contexto: ${currentFile.label} (${currentFile.language.toUpperCase()})`}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Chip
+            size="small"
+            color={isRateLimited ? 'warning' : 'default'}
+            variant="outlined"
+            label="Límite: 5 pet./min"
+          />
+          <Chip
+            size="small"
+            color="secondary"
+            variant="outlined"
+            label={`Contexto: ${currentFile.label} (${currentFile.language.toUpperCase()})`}
+          />
+        </Box>
       </Box>
 
       <Box sx={{ display: 'flex', gap: 1.5, flexDirection: { xs: 'column', sm: 'row' } }}>
@@ -124,7 +146,13 @@ export const AIAssistantPanel: React.FC<AIAssistantPanelProps> = ({ sessionId })
       </Box>
 
       {error && (
-        <Alert severity="error" onClose={() => dispatch(clearAIError())}>
+        <Alert
+          severity={isRateLimited ? 'warning' : 'error'}
+          onClose={() => dispatch(clearAIError())}
+        >
+          {isRateLimited && (
+            <AlertTitle>Límite de Peticiones Excedido (429 Too Many Requests)</AlertTitle>
+          )}
           {error}
         </Alert>
       )}

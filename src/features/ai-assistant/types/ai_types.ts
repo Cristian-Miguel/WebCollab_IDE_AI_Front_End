@@ -23,4 +23,5 @@ export interface AIAssistantState {
   history: AISuggestionModel[];
   loading: boolean;
   error: string | null;
+  isRateLimited?: boolean;
 }
