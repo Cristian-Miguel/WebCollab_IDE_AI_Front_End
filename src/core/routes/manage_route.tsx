@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../../feature/auth/hook/use_auth';
+import { useAuth } from '../../features/auth/hook/use_auth';
 
 interface ProtectedRouteProps {
   requiredRole?: string; 

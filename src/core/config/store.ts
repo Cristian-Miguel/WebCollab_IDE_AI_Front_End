@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
-import { authReducer } from '../../feature/auth/context/auth_reducer';
-import { dashboardReducer } from '../../feature/dashboard/store/dashboard_slice';
+import { authReducer } from '../../features/auth/context/auth_reducer';
+import { dashboardReducer } from '../../features/dashboard/store/dashboard_slice';
 import { editorReducer } from '../../features/editor/store/editorSlice';
 import { presenceReducer } from '../../features/presence/store/presenceSlice';
 import { aiReducer } from '../../features/ai-assistant/store/aiSlice';

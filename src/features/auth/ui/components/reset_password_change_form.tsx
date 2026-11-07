@@ -8,13 +8,13 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 import { z } from 'zod';
 import { resetPassword } from '../../service/auth_service';
+import { PASSWORD_REGEX } from './register_schema';
 
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_-])[A-Za-z\d@$!%*?&_-]{8,16}$/;
 const resetSchema = z.object({
   password: z.string()
     .min(8, 'Usa entre 8 y 16 caracteres.')
     .max(16, 'Usa entre 8 y 16 caracteres.')
-    .regex(PASSWORD_REGEX, 'Incluye mayúscula, minúscula, número y un símbolo.'),
+    .regex(PASSWORD_REGEX, 'Incluye mayúscula, minúscula, número y un carácter especial permitido.'),
   confirmPassword: z.string(),
 }).refine(({ password, confirmPassword }) => password === confirmPassword, {
   message: 'Las contraseñas no coinciden.',

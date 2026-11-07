@@ -48,7 +48,7 @@
 
 // export default EmailTokenStatusMessage;
 
-// src/feature/auth/ui/components/EmailTokenStatusMessage.tsx
+// src/features/auth/ui/components/EmailTokenStatusMessage.tsx
 
 import React from 'react';
 import { Box, Typography, Alert, AlertTitle, Button } from '@mui/material';

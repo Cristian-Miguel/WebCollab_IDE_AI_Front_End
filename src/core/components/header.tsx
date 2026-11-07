@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { Alert, AppBar, Toolbar, Typography, IconButton, Box, Button, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { useAuth } from '../../feature/auth/hook/use_auth';
+import { useAuth } from '../../features/auth/hook/use_auth';
 import { useNavigate } from 'react-router-dom';
-import { logoutToken } from '../../feature/auth/service/auth_service';
+import { logoutToken } from '../../features/auth/service/auth_service';
 import MenuSideBar from './menu_side_bar'; 
 
 const Header: React.FC = () => {

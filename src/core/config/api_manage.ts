@@ -4,7 +4,7 @@ import axios, {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
-import { AUTH_ACTION_TYPES } from '../../feature/auth/context/auth_types';
+import { AUTH_ACTION_TYPES } from '../../features/auth/context/auth_types';
 import { store } from './store';
 import { clearTokens, getAccessToken, saveTokens } from './jwt_manage';
 import { API_ROUTES } from '../const/api_routes';

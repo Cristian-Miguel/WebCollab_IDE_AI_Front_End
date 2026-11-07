@@ -6,13 +6,15 @@ import CodeRoundedIcon from '@mui/icons-material/CodeRounded';
 import { CreateSessionModal } from '../components/create_session_modal';
 import { JoinSessionButton } from '../../../ide/ui/components/join_session_button';
 import { useAuth } from '../../../auth/hook/use_auth';
+import { ChartBar } from '../../../home/ui/components/chart_bar';
+import { ChartPie } from '../../../home/ui/components/chart_pie';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ p: { xs: 1, md: 2 }, maxWidth: 1280, width: '100%', mx: 'auto', flexGrow: 1 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Typography variant="h4" fontWeight={750} gutterBottom>
@@ -34,9 +36,9 @@ export const DashboardPage: React.FC = () => {
         </Button>
       </Box>
 
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={3} sx={{ mb: 4 }} alignItems="stretch">
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={{ p: 1.5, bgcolor: 'primary.light', color: 'primary.main', borderRadius: 2, display: 'flex' }}>
               <CodeRoundedIcon fontSize="large" />
             </Box>
@@ -47,7 +49,7 @@ export const DashboardPage: React.FC = () => {
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={{ p: 1.5, bgcolor: 'secondary.light', color: 'secondary.main', borderRadius: 2, display: 'flex' }}>
               <GroupsRoundedIcon fontSize="large" />
             </Box>
@@ -58,7 +60,7 @@ export const DashboardPage: React.FC = () => {
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={2} sx={{ p: 3, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={{ p: 1.5, bgcolor: 'success.light', color: 'success.main', borderRadius: 2, display: 'flex' }}>
               <AddBoxRoundedIcon fontSize="large" />
             </Box>
@@ -70,16 +72,29 @@ export const DashboardPage: React.FC = () => {
         </Grid>
       </Grid>
 
+      <Grid container spacing={3} sx={{ mb: 4 }} alignItems="stretch">
+        <Grid size={{ xs: 12, lg: 7 }}>
+          <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: 3 }}>
+            <ChartBar />
+          </Paper>
+        </Grid>
+        <Grid size={{ xs: 12, lg: 5 }}>
+          <Paper elevation={2} sx={{ p: 3, height: '100%', borderRadius: 3 }}>
+            <ChartPie />
+          </Paper>
+        </Grid>
+      </Grid>
+
       <Card elevation={2} sx={{ borderRadius: 3, p: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
-        <CardContent sx={{ py: 5 }}>
-          <GroupsRoundedIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+        <CardContent sx={{ py: 4 }}>
+          <GroupsRoundedIcon sx={{ fontSize: 56, color: 'text.secondary', mb: 1.5 }} />
           <Typography variant="h5" fontWeight={700} gutterBottom>
             Comienza o únete a una colaboración
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 500, mx: 'auto', mb: 3 }}>
             Crea una sesión de programación colaborativa o ingresa el ID de una sesión existente (máximo 4 usuarios simultáneos).
           </Typography>
-          <CardActions sx={{ justifyContent: 'center', mb: 3 }}>
+          <CardActions sx={{ justifyContent: 'center', mb: 2 }}>
             <Button
               variant="contained"
               size="medium"

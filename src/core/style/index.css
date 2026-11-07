@@ -401,3 +401,28 @@ a {
     margin-top: auto !important;
   }
 }
+
+
+/* Layout Principal y Sticky Footer */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  flex: 1 0 auto;
+  width: 100%;
+}

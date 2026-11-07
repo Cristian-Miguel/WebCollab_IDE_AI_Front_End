@@ -4,24 +4,26 @@ import { Box, Typography, Container } from '@mui/material';
 const Footer: React.FC = () => {
   return (
     <Box
+      component="footer"
       sx={{
         width: '100%',
-        py: 2,
-        mt: 'auto', // Asegura que se vaya al final de la página dentro del MainLayout
+        py: 2.5,
+        mt: 'auto',
+        flexShrink: 0,
+        borderTop: '1px solid',
+        borderColor: 'divider',
         backgroundColor: (theme) =>
           theme.palette.mode === 'light'
-            ? theme.palette.grey[200]
-            : theme.palette.grey[800],
+            ? theme.palette.grey[100]
+            : theme.palette.grey[900],
       }}
-      component="footer"
     >
       <Container maxWidth="lg">
         <Typography variant="body2" color="text.secondary" align="center">
           {'© '}
           {new Date().getFullYear()}
-          {' Nombre de tu Empresa. Todos los derechos reservados.'}
+          {' Nexo · Plataforma de Desarrollo Colaborativo en Tiempo Real. Todos los derechos reservados.'}
         </Typography>
-        {/* Puedes añadir más links o información aquí */}
       </Container>
     </Box>
   );

@@ -16,11 +16,7 @@ import { resendValidationEmail } from '../../../auth/service/auth_service';
 import { useUser } from '../../hook/use_user'; 
 import { type User } from '../../model/user_model'; 
 
-// URL de imagen por defecto (o puedes usar un Icono)
-// const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?u=user'; 
-
 const SettingsPage: React.FC = () => {
-    // const { fullUser, loading: dataLoading, error: dataError, refetch } = useUser();
     const { user: fullUser, isLoading: dataLoading, error: dataError} = useUser();
     const { logout } = useAuth(); 
     
@@ -35,23 +31,12 @@ const SettingsPage: React.FC = () => {
         );
     }
 
-    // if (dataError) {
-    //     return (
-    //         <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
-    //             <Alert severity="error" sx={{ mt: 4 }}>
-    //                 <AlertTitle>Error al cargar perfil</AlertTitle>
-    //                 {dataError} - <Button onClick={fetchUserInfo}>Reintentar</Button>
-    //             </Alert>
-    //         </Box>
-    //     );
-    // }
-
     if (!fullUser) {
          return <Box sx={{ p: 5 }}>No se encontró información del usuario.</Box>;
     }
 
-    const user = fullUser as User; // Datos completos del usuario
-    const isVerified = false;
+    const user = fullUser as User;
+    const isVerified = Boolean(user.isEmailVerified);
     
     const handleResendEmail = async () => {
         setSendLoading(true);
@@ -70,9 +55,8 @@ const SettingsPage: React.FC = () => {
         logout(); 
     };
     
-    // Simulación de navegación
     const handleActionClick = (action: string) => {
-        console.log(`${action} click. Aquí iría la lógica de navegación o modal.`);
+        console.log(`${action} click.`);
     };
 
     const handleFotoOrIconProfile = () => {
@@ -83,37 +67,36 @@ const SettingsPage: React.FC = () => {
                     src={user.profileImageUrl}
                     sx={{ width: 80, height: 80 }} 
                 />
-            )
+            );
         } else {
             return (
-                <AccountCircleIcon sx={{ width: 80, height: 80 }} />
-            )
+                <AccountCircleIcon sx={{ width: 80, height: 80, color: 'primary.main' }} />
+            );
         }
     };
     
     const ProfileCard = () => (
         <Paper 
-            elevation={3} 
+            elevation={2} 
             sx={{ 
                 p: 3, 
                 mb: 4, 
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 3, 
-                borderRadius: 2 
+                borderRadius: 3 
             }}
         >   
             {handleFotoOrIconProfile()}
             <Box>
-                <Typography variant="h5" component="div">
+                <Typography variant="h5" fontWeight={700} component="div">
                     {user.fullName || 'Nombre Completo No Definido'}
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
                     {user.email}
                 </Typography>
-                {/* Puedes añadir un badge de verificación aquí si está verificado */}
                 {isVerified && (
-                     <Typography variant="caption" color="success.main" sx={{ display: 'flex', alignItems: 'center' }}>
+                     <Typography variant="caption" color="success.main" sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                          <CheckCircleIcon sx={{ fontSize: 14, mr: 0.5 }} /> Correo Verificado
                      </Typography>
                 )}
@@ -121,7 +104,6 @@ const SettingsPage: React.FC = () => {
         </Paper>
     );
 
-    // Advertencia de Correo No Validado
     const VerificationWarning = () => {
         if (isVerified) return null;
 
@@ -129,8 +111,9 @@ const SettingsPage: React.FC = () => {
             <Paper 
                 elevation={1} 
                 sx={{ 
-                    p: 2, 
+                    p: 2.5, 
                     mb: 4, 
+                    borderRadius: 3,
                     border: '1px solid', 
                     borderColor: 'warning.main', 
                     backgroundColor: 'warning.light' + '10' 
@@ -141,12 +124,12 @@ const SettingsPage: React.FC = () => {
                     Verificación de Correo Pendiente
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                    Tu cuenta **{user.email}** aún no ha sido verificada. Por favor, solicita un nuevo enlace si no lo has recibido.
+                    Tu cuenta <strong>{user.email}</strong> aún no ha sido verificada. Por favor, solicita un nuevo enlace si no lo has recibido.
                 </Typography>
                 
                 {sendStatus === 'success' && (
                     <Alert severity="info" sx={{ mb: 2 }}>
-                        Hemos enviado un **nuevo enlace** de verificación.
+                        Hemos enviado un nuevo enlace de verificación.
                     </Alert>
                 )}
                 {sendStatus === 'error' && (
@@ -169,26 +152,22 @@ const SettingsPage: React.FC = () => {
     };
 
     return (
-        <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
-            <Typography variant="h4" component="h1" gutterBottom>
+        <Box sx={{ p: { xs: 1, md: 2 }, maxWidth: 960, width: '100%', mx: 'auto', flexGrow: 1 }}>
+            <Typography variant="h4" fontWeight={750} component="h1" gutterBottom>
                 Configuración de Perfil
             </Typography>
             <Divider sx={{ mb: 3 }} />
 
-            {/* 1. Tarjeta de Perfil (Imagen, Nombre, Correo) */}
             <ProfileCard />
-
-            {/* 2. Advertencia de Verificación de Correo */}
             <VerificationWarning />
 
-            <Typography variant="h5" component="h2" gutterBottom sx={{ mt: 4 }}>
+            <Typography variant="h5" fontWeight={700} component="h2" gutterBottom sx={{ mt: 4 }}>
                 Acciones de Cuenta
             </Typography>
             <Divider sx={{ mb: 3 }} />
 
-            {/* 3. Botones de Acción */}
-            <Grid container spacing={3}>
-                <Grid>
+            <Grid container spacing={2.5}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                     <Button
                         variant="contained"
                         color="primary"
@@ -200,7 +179,7 @@ const SettingsPage: React.FC = () => {
                         Modificar Información
                     </Button>
                 </Grid>
-                <Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
                     <Button
                         variant="outlined"
                         color="secondary"
@@ -212,7 +191,7 @@ const SettingsPage: React.FC = () => {
                         Cambiar Contraseña
                     </Button>
                 </Grid>
-                <Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
                     <Button
                         variant="contained"
                         color="error"
@@ -224,9 +203,9 @@ const SettingsPage: React.FC = () => {
                         Eliminar Cuenta
                     </Button>
                 </Grid>
-                <Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
                     <Button
-                        variant="text"
+                        variant="outlined"
                         color="inherit"
                         startIcon={<LogoutIcon />}
                         fullWidth
@@ -238,14 +217,12 @@ const SettingsPage: React.FC = () => {
                 </Grid>
             </Grid>
             
-            {/* Opcional: Mostrar error de carga del perfil */}
             {dataError && (
                  <Alert severity="error" sx={{ mt: 4 }}>
                     <AlertTitle>Error de Carga de Perfil</AlertTitle>
                     {dataError}
                  </Alert>
             )}
-
         </Box>
     );
 };

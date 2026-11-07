@@ -1,4 +1,4 @@
-import type { SessionParticipantModel } from '../../../feature/dashboard/types/session_types';
+import type { SessionParticipantModel } from '../../../features/dashboard/types/session_types';
 
 export type PresenceParticipant = SessionParticipantModel;
 

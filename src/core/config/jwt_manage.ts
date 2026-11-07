@@ -1,5 +1,5 @@
 import { jwtDecode, type JwtPayload } from 'jwt-decode';
-import type { AuthUser, UserTokenPayload } from '../../feature/auth/model/auth_model';
+import type { AuthUser, UserTokenPayload } from '../../features/auth/model/auth_model';
 
 let accessToken: string | null = null;
 

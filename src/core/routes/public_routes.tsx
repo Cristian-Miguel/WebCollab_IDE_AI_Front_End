@@ -1,8 +1,8 @@
 import { type ReactNode } from 'react';
-import LoginPage from          '../../feature/auth/ui/page/login_page';
-import RegisterPage from       '../../feature/auth/ui/page/register_page';
-import ResetPasswordPage from  '../../feature/auth/ui/page/reset_password_page';
-import ValidatedEmailPage from '../../feature/auth/ui/page/validated_email_page';
+import LoginPage from          '../../features/auth/ui/page/login_page';
+import RegisterPage from       '../../features/auth/ui/page/register_page';
+import ResetPasswordPage from  '../../features/auth/ui/page/reset_password_page';
+import ValidatedEmailPage from '../../features/auth/ui/page/validated_email_page';
 
 interface RouteConfig {
   path: string;

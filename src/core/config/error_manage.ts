@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { AUTH_ACTION_TYPES } from '../../feature/auth/context/auth_types'; // Para errores de sesión
+import { AUTH_ACTION_TYPES } from '../../features/auth/context/auth_types'; // Para errores de sesión
 import { store } from './store'; // Para acceso directo al store de Redux
 
 // --- INTERFACES DEL MODELO DE ERROR DEL BACKEND ---

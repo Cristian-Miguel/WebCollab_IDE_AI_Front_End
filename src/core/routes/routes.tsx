@@ -3,15 +3,10 @@ import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { ProtectedRoute, PublicRoute } from './manage_route';
 import { PublicRoutes } from './public_routes';
 import { PrivateRoutes } from './private_routes';
-
-import Header from '../components/header';
-import Footer from '../components/footer';
+import { MainLayout } from '../components/layout/main_layout';
 import { Box, Chip, Container, Typography } from '@mui/material';
 import TerminalRoundedIcon from '@mui/icons-material/TerminalRounded';
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
-// import MenuSideBar from '../components/menu_side_bar';
-
-// --- LAYOUTS ---
 
 // Layout para páginas públicas (sin Header/Sidebar)
 const AuthLayout = () => {
@@ -56,22 +51,6 @@ const AuthLayout = () => {
   );
 };
 
-// Layout para páginas privadas (con navegación)
-const MainLayout = () => {
-  return (
-    <>
-      <Header />
-      <div style={{ display: 'flex' }}>
-        {/* <MenuSideBar /> */}
-        <main style={{ flexGrow: 1, padding: '20px' }}>
-          <Outlet />
-        </main>
-      </div>
-      <Footer />
-    </>
-  );
-};
-
 export const AppRouter: React.FC = () => {
   return (
     <BrowserRouter>
@@ -83,7 +62,7 @@ export const AppRouter: React.FC = () => {
             ))}
           </Route>
         </Route>
-        
+
         <Route element={<PublicRoute />}>
           <Route path="/" element={<AuthLayout />}>
             {PublicRoutes.map((route) => (

@@ -6,7 +6,7 @@ import {
   setPresenceConnected,
   setPresenceError,
 } from '../store/presenceSlice';
-import { updateParticipantsList } from '../../../feature/dashboard/store/dashboard_slice';
+import { updateParticipantsList } from '../../../features/dashboard/store/dashboard_slice';
 import {
   WS_DISCONNECT_LIMIT_REACHED,
   type PresenceParticipant,
